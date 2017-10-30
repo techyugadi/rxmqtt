@@ -6,4 +6,4 @@ Once we retrieve an Observable / Flowable, the MQTT messages can be manipulated 
 
 For usage, please browse through the sample programs in the sample directory.
 
-There is also a unit test for validating the functionality with an Obervable.
+There is also a unit test for validating the functionality with an Observable.
