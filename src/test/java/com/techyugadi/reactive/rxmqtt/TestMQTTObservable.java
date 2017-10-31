@@ -26,7 +26,7 @@ public class TestMQTTObservable extends TestCase {
 	private static Logger LOG = 
 			LoggerFactory.getLogger(TestMQTTObservable.class);
 	
-	public void testObserver() throws IOException, InterruptedException, 
+	public void testObservable() throws IOException, InterruptedException, 
 									MqttException, ConfigurationException {
 		
 		LOG.info("Unit Test MQTTObservable");
@@ -80,6 +80,62 @@ public class TestMQTTObservable extends TestCase {
 		
 		assertEquals(observed.size(), 6);
 		
+	}
+
+	public void testFlowable() throws IOException, InterruptedException, 
+									MqttException, ConfigurationException {
+
+		LOG.info("Unit Test MQTTFlowable");
+
+		Properties moqprops = new Properties();
+		moqprops.put(BrokerConstants.PORT_PROPERTY_NAME, "1883");
+		moqprops.put(BrokerConstants.HOST_PROPERTY_NAME, "0.0.0.0");
+		moqprops.put(BrokerConstants.ALLOW_ANONYMOUS_PROPERTY_NAME, true);
+
+		Server mqttBroker = new Server();
+		mqttBroker.startServer(moqprops);
+
+		Thread.sleep(3000);
+
+		String broker = "tcp://0.0.0.0:1883";
+		String clientId = "mqtt-test-client";
+
+		String topic = "test-topic";
+		String msg = "test message";
+		int qos = 1;
+
+		MqttClient mqttClient = new MqttClient(broker, clientId, 
+					new MemoryPersistence());
+		MqttConnectOptions connOpts = new MqttConnectOptions();
+		connOpts.setCleanSession(true);
+
+		mqttClient.connect(connOpts);
+
+		Properties mqttProps = new Properties();
+		mqttProps.setProperty("brokerURL", "tcp://localhost:1883");
+		mqttProps.setProperty("mqttTopic", topic);
+
+		MQTTObservable mqttObservable = new MQTTObservable(mqttProps);
+
+		Flowable<MqttMessage> flowable = 
+				mqttObservable.retrieveFlowable(BackpressureStrategy.BUFFER);
+
+		List<MqttMessage> observed = new ArrayList<MqttMessage>();
+		flowable.subscribe(observed::add);
+
+		for (int i=0; i<6; i++) {
+			MqttMessage message = new MqttMessage(msg.getBytes());
+			message.setQos(qos);
+			mqttClient.publish(topic, message);
+		}
+
+		mqttClient.disconnect();
+		Thread.sleep(3000);
+		mqttObservable.cleanup();
+		mqttBroker.stopServer();
+
+		assertEquals(observed.size(), 6);
+
 	}
 
 }
