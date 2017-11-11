@@ -17,6 +17,9 @@ import com.techyugadi.reactive.rxmqtt.ConfigurationException;
 import com.techyugadi.reactive.rxmqtt.MQTTObservable;
 
 import io.reactivex.Observable;
+import io.reactivex.Flowable;
+import io.reactivex.BackpressureStrategy;
+
 import junit.framework.TestCase;
 import io.moquette.BrokerConstants;
 import io.moquette.server.Server;
