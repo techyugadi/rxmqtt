@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.techyugadi.reactive.rxmqtt.TestMQTTObservable
--------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.602 sec - in com.techyugadi.reactive.rxmqtt.TestMQTTObservable
